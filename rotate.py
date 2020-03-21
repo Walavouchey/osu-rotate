@@ -1,7 +1,11 @@
 # Spaghetti code galore <3
 import sys
 import os
+import subprocess
 import zipfile
+import ntpath
+import tkinter as tk
+from tkinter import filedialog
 
 # Functions to rotate and scale coordinates
 def rotatexy(x, y, cx, cy):
@@ -90,7 +94,7 @@ def convert(filename):
         args[0] = str(x)
         args[1] = str(y)
 
-        if len(args) > 5 and args[5].find("|") != -1:
+        if int(args[3]) & 2 == 2:
             sliderpoints = []
             new_sliderpoints = ""
             sliderpoints = args[5].split("|")
@@ -111,7 +115,7 @@ def convert(filename):
                 args[5] = new_sliderpoints
                 
             # Scale the length of each slider
-            args[7] = str(float(args[7]) * scale)
+            args[7] = str(round(float(args[7]) * scale, 10))
         
         newline = ",".join(args) + "\n"
         newfile += newline
@@ -125,17 +129,24 @@ def zipdir(path, ziph):
         for file in files:
             ziph.write(os.path.join(root, file))
 
-directory = sys.argv[1]
-os.system(f"rm -r rotated & mkdir rotated & cp -r \"{directory}\" ./rotated")
-directory_name = os.listdir("./rotated")[0]
-files = os.listdir("./rotated/" + directory_name)
+def path_leaf(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
+
+root = tk.Tk()
+root.withdraw()
+
+directory = filedialog.askdirectory()
+directory_name = path_leaf(directory)
+os.system(f"rm -r \"{directory_name}\" & cp -r \"{directory}\" .")
+files = os.listdir("./" + directory_name)
+print(directory_name)
 for file in files:
     if file.endswith(".osu"):
         print("converting " + file)
-        convert("rotated/" + directory_name + "/" + file)
-        os.system(f"rm \"./rotated/{directory_name}/{file}\"")
-
+        convert("./" + directory_name + "/" + file)
+        os.system(f"rm \"./{directory_name}/{file}\"")
 zipf = zipfile.ZipFile(f"{directory_name}.osz", 'w', zipfile.ZIP_DEFLATED)
-zipdir("./rotated/" + directory_name, zipf)
+zipdir("./" + directory_name, zipf)
 zipf.close()
-
+appdata = os.getenv("APPDATA")

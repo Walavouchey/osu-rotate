@@ -50,9 +50,7 @@ def convert(filename, theta, folder, flag):
     # After rotating, everything needs to be scaled up to the new aspect ratio
     srcw = abs(9 * sin(pi/2 - theta)) + abs(6.75  * sin(theta))
     srch = abs(6.75 * sin(pi/2 - theta)) + abs(9 * sin(theta))
-    print(srcw, srch)
     scale = min( 9/srcw, 16/srch)
-    #scale = 4.0/3.0
 
     file = open(filename, "r", encoding="utf-8")
     text = file.read()
@@ -152,7 +150,7 @@ root.withdraw()
 
 directory = filedialog.askdirectory()
 angle = int(sys.argv[1]) # in degrees
-flag = " r-" + int(angle)
+flag = f" r-{angle}"
 print(f"Rotating by {angle} degrees. \"{flag}\" will be appended to each rotated difficulty.")
 directory_name = path_leaf(directory)
 warn = "\033[93m"

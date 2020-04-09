@@ -7,6 +7,7 @@ import ntpath
 import tkinter as tk
 from tkinter import filedialog
 from math import sin, cos, pi, radians
+import re
 
 def path_leaf(path):
     head, tail = ntpath.split(path)
@@ -55,7 +56,7 @@ def convert(filename, theta, folder, flag):
     file = open(filename, "r", encoding="utf-8")
     text = file.read()
     file.close()
-    
+
     offset = text.find("[HitObjects]")
     objects = text[offset:]
     offset += objects.find("\n") + 1
@@ -93,6 +94,9 @@ def convert(filename, theta, folder, flag):
     offset4 += text[offset4:].find("\n")
 
     newfile = newfile[0:offset4] + flag + newfile[offset4:]
+
+    newfile = re.sub(r"(?<=BeatmapSetID:)\d+", "-1", newfile)
+    newfile = re.sub(r"(?<=BeatmapID:)\d+", "0", newfile)
 
 
     for line in lines:
